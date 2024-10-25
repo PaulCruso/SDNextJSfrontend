@@ -1,21 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { getData } from "country-list";
+import { registerUser } from "../slices/authSlice";
 import Footer from "../layouts/Footer";
 import Header from "../layouts/Header";
-import { registerUser } from "../slices/authSlice";
 import * as yup from "yup";
-import axios from "axios";
-import Select from "react-select";
 
 const SignUpValidationSchema = yup.object({
-  first_name: yup.string().required("Please Enter Your First Name"),
-  last_name: yup.string().required("Please Enter Your Last Name"),
-  phone: yup.string().required("Please Enter Your Phone Number"),
   email: yup.string().email().required("Please Enter Your Email"),
-  dateofBirth: yup.date().required("Please Enter Your Date of Birth"),
   password: yup
       .string()
       .matches(
@@ -27,11 +20,7 @@ const SignUpValidationSchema = yup.object({
 });
 
 const initialValues = {
-  first_name: "defaultFirstName",
-  last_name: "defaultLastName",
-  phone: "defaultPhone",
   email: "",
-  dateofBirth: "01/01/1900",
   password: "",
 };
 
@@ -39,31 +28,14 @@ const Registration = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
-  const [location, setLocation] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [nationalityTouched, setNationalityTouched] = useState(false);
-  const [residenceTouched, setResidenceTouched] = useState(false);
-  const [countries, setCountries] = useState([]);
 
   const { values, errors, touched, handleSubmit, handleChange, handleBlur } =
       useFormik({
         initialValues: initialValues,
-        onSubmit: (values) => {
-          // Manually mark nationality and residence as touched
-          setNationalityTouched(true);
-          setResidenceTouched(true);
-
-          if (nationality && location) {
-            dispatch(
-                registerUser({
-                  ...values,
-                  residence_country: location,
-                  nationality: nationality,
-                })
-            );
-          }
-        },
         validationSchema: SignUpValidationSchema,
+        onSubmit: (values) => {
+          dispatch(registerUser(values));
+        },
       });
 
   useEffect(() => {
@@ -71,56 +43,6 @@ const Registration = () => {
       navigate("/account");
     }
   }, [auth._id, navigate]);
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const res = await axios.get(`https://kyc-api.amlbot.com/countries`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Token e31169640d9147493929ab77c9128470b16d",
-          },
-        });
-        setCountries(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    if (countries.length === 0) {
-      fetchCountries();
-    }
-  }, []);
-
-  const countryOptions = countries?.map((country) => ({
-    value: country.country_code,
-    label: country.labels[0].label,
-  }));
-
-  const customStyles = {
-    control: (provided, state) => ({
-      ...provided,
-      height: 54,
-      minHeight: 54,
-      borderRadius: 8,
-      zIndex: 5,
-    }),
-    valueContainer: (provided) => ({
-      ...provided,
-      height: "100%",
-      padding: "0 16px",
-      zIndex: 5,
-    }),
-    input: (provided) => ({
-      ...provided,
-      margin: 0,
-      zIndex: 5,
-    }),
-    indicatorsContainer: (provided) => ({
-      ...provided,
-      height: "100%",
-      zIndex: 5,
-    }),
-  };
 
   return (
       <>
@@ -135,7 +57,6 @@ const Registration = () => {
                     <div className="info">
                       <h2>Contact Information</h2>
                     </div>
-
                     <div className="widget widget_about">
                       <div className="widget widget_getintuch">
                         <ul>
@@ -146,23 +67,22 @@ const Registration = () => {
                           <li>
                             <i className="fa fa-envelope"></i>
                             <span>
-                            info@secondarydao.com
-                            <br />
-                            secondarydao@gmail.com
-                          </span>
+                                                info@secondarydao.com
+                                                <br />
+                                                secondarydao@gmail.com
+                                            </span>
                           </li>
                           <li>
                             <i className="fas fa-map-marker-alt"></i>
                             <span>
-                            6 State RD, Suite 117
-                            <br />
-                            Mechanicsburg, PA 17050-7957
-                          </span>
+                                                6 State RD, Suite 117
+                                                <br />
+                                                Mechanicsburg, PA 17050-7957
+                                            </span>
                           </li>
                         </ul>
                       </div>
                     </div>
-
                     <div className="social-box dz-social-icon style-3">
                       <h6>Our Socials</h6>
                       <ul className="social-icon">
@@ -208,192 +128,46 @@ const Registration = () => {
                       <div className="card-body">
                         <div className="mb-4">
                           <h2 className="mb-0">Sign Up</h2>
-                          {/*<p className="mb-0 font-18 text-primary">*/}
-                          {/*  Enter your personal details below:*/}
-                          {/*</p>*/}
+                          <p className="mb-0 font-18 text-primary">
+                            Enter your personal details below:
+                          </p>
                         </div>
                         <form className="dzForm" onSubmit={handleSubmit}>
-                          <div className="row">
-                            {/* First Name */}
-                            {/*<div className="col-xl-6 mb-3 mb-md-4">*/}
-                            {/*  <input*/}
-                            {/*    name="first_name"*/}
-                            {/*    type="text"*/}
-                            {/*    className="form-control"*/}
-                            {/*    placeholder="First Name"*/}
-                            {/*    value={values.first_name}*/}
-                            {/*    onChange={handleChange}*/}
-                            {/*    onBlur={handleBlur}*/}
-                            {/*  />*/}
-                            {/*  {errors.first_name && touched.first_name ? (*/}
-                            {/*    <p className="text-red mt-2 text-p">*/}
-                            {/*      {errors.first_name}*/}
-                            {/*    </p>*/}
-                            {/*  ) : null}*/}
-                            {/*</div>*/}
-                            {/* Last Name */}
-                            {/*<div className="col-xl-6 mb-3 mb-md-4">*/}
-                            {/*  <input*/}
-                            {/*    name="last_name"*/}
-                            {/*    type="last_name"*/}
-                            {/*    className="form-control"*/}
-                            {/*    placeholder="Last Name"*/}
-                            {/*    value={values.last_name}*/}
-                            {/*    onChange={handleChange}*/}
-                            {/*    onBlur={handleBlur}*/}
-                            {/*  />*/}
-                            {/*  {errors.last_name && touched.last_name ? (*/}
-                            {/*    <p className="text-red mt-2 text-p">*/}
-                            {/*      {errors.last_name}*/}
-                            {/*    </p>*/}
-                            {/*  ) : null}*/}
-                            {/*</div>*/}
-                          </div>
-
                           <div className="row">
                             {/* Email */}
                             <div className="col-xl-6 mb-3 mb-md-4">
                               <input
-                                  name="email"
                                   type="email"
                                   className="form-control"
+                                  id="email"
+                                  name="email"
                                   placeholder="Email Address"
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
                                   value={values.email}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
                               />
-                              {errors.email && touched.email ? (
-                                  <p className="text-red mt-2 text-p">
-                                    {errors.email}
-                                  </p>
-                              ) : null}
-                            </div>
-
-                            {/* Date of Birth */}
-                            {/*<div className="col-xl-6 mb-3 mb-md-4">*/}
-                            {/*  <input*/}
-                            {/*    name="dateofBirth"*/}
-                            {/*    type="date"*/}
-                            {/*    className="form-control"*/}
-                            {/*    placeholder="Date of Birth"*/}
-                            {/*    value={values.dateofBirth}*/}
-                            {/*    onChange={handleChange}*/}
-                            {/*    onBlur={handleBlur}*/}
-                            {/*  />*/}
-                            {/*  {errors.dateofBirth && touched.dateofBirth ? (*/}
-                            {/*    <p className="text-red mt-2 text-p">*/}
-                            {/*      {errors.dateofBirth}*/}
-                            {/*    </p>*/}
-                            {/*  ) : null}*/}
-                            {/*</div>*/}
-                          </div>
-
-                          <div className="row">
-                            {/* Phone */}
-                            {/*<div className="col-xl-6 mb-3 mb-md-4">*/}
-                            {/*  <input*/}
-                            {/*    name="phone"*/}
-                            {/*    type="phone"*/}
-                            {/*    className="form-control"*/}
-                            {/*    placeholder="Phone No."*/}
-                            {/*    value={values.phone}*/}
-                            {/*    onChange={handleChange}*/}
-                            {/*    onBlur={handleBlur}*/}
-                            {/*  />*/}
-                            {/*  {errors.phone && touched.phone ? (*/}
-                            {/*    <p className="text-red mt-2 text-p">*/}
-                            {/*      {errors.phone}*/}
-                            {/*    </p>*/}
-                            {/*  ) : null}*/}
-                            {/*</div>*/}
-
-                            {/*/!* Residence Country *!/*/}
-                            {/*<div className="col-xl-6 mb-3 mb-md-4">*/}
-                            {/*  <Select*/}
-                            {/*    styles={customStyles}*/}
-                            {/*    className="basic-single"*/}
-                            {/*    classNamePrefix="select"*/}
-                            {/*    defaultValue={countryOptions[0]}*/}
-                            {/*    isSearchable={true}*/}
-                            {/*    name="color"*/}
-                            {/*    options={countryOptions}*/}
-                            {/*    onChange={(selectedOption) => {*/}
-                            {/*      setLocation(*/}
-                            {/*        selectedOption ? selectedOption.value : ""*/}
-                            {/*      );*/}
-                            {/*    }}*/}
-                            {/*    onBlur={() => setResidenceTouched(true)}*/}
-                            {/*    placeholder="Residence Country"*/}
-                            {/*  />*/}
-                            {/*  {residenceTouched && location === "" ? (*/}
-                            {/*    <p className="text-red mt-2 text-p">*/}
-                            {/*      Please Enter Residency Country Name*/}
-                            {/*    </p>*/}
-                            {/*  ) : null}*/}
-                            {/*</div>*/}
-                          </div>
-
-                          <div className="row">
-                            {/* Nationality */}
-                            {/*<div className="col-xl-6 mb-3 mb-md-4">*/}
-                            {/*  <Select*/}
-                            {/*    styles={customStyles}*/}
-                            {/*    className="basic-single"*/}
-                            {/*    classNamePrefix="select"*/}
-                            {/*    defaultValue={countryOptions[0]}*/}
-                            {/*    isSearchable={true}*/}
-                            {/*    name="color"*/}
-                            {/*    options={countryOptions}*/}
-                            {/*    onChange={(selectedOption) => {*/}
-                            {/*      setNationality(*/}
-                            {/*        selectedOption ? selectedOption.value : ""*/}
-                            {/*      );*/}
-                            {/*    }}*/}
-                            {/*    onBlur={() => setNationalityTouched(true)}*/}
-                            {/*    placeholder="Nationality"*/}
-                            {/*  />*/}
-                            {/*  /!* <select*/}
-                            {/*    onChange={(e) => setNationality(e.target.value)}*/}
-                            {/*    value={nationality}*/}
-                            {/*    onBlur={() => setNationalityTouched(true)}*/}
-                            {/*    className="form-control"*/}
-                            {/*  >*/}
-                            {/*    <option value="">Nationality</option>*/}
-                            {/*    {countries.map((country) => (*/}
-                            {/*      <option*/}
-                            {/*        key={country.country_code}*/}
-                            {/*        value={country.country_code}*/}
-                            {/*      >*/}
-                            {/*        {country.labels[0].label}*/}
-                            {/*      </option>*/}
-                            {/*    ))}*/}
-                            {/*  </select> *!/*/}
-                            {/*  {nationalityTouched && nationality === "" ? (*/}
-                            {/*    <p className="text-red mt-2 text-p">*/}
-                            {/*      Please Enter Nationality*/}
-                            {/*    </p>*/}
-                            {/*  ) : null}*/}
-                            {/*</div>*/}
-
-                            {/* Password */}
-                            <div className="col-xl-6 mb-3 mb-md-4">
-                              <input
-                                  name="password"
-                                  type="password"
-                                  className="form-control"
-                                  placeholder="Password"
-                                  value={values.password}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
-                              />
-                              {errors.password && touched.password ? (
-                                  <p className="text-red mt-2 text-p">
-                                    {errors.password}
-                                  </p>
-                              ) : null}
+                              {errors.email && touched.email && (
+                                  <div className="error">{errors.email}</div>
+                              )}
                             </div>
                           </div>
-
+                          {/* Password */}
+                          <div className="col-xl-6 mb-3 mb-md-4">
+                            <label htmlFor="password"></label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                className="form-control"
+                                placeholder="Password"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.password}
+                            />
+                            {errors.password && touched.password && (
+                                <div className="error">{errors.password}</div>
+                            )}
+                          </div>
                           {/* Submit Button */}
                           <div className="row">
                             <div className="col-xl-12 mb-3 mb-md-4 mt-3">

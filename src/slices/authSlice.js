@@ -6,13 +6,7 @@ import { toast } from "react-toastify";
 
 const initialState = {
   token: localStorage.getItem("token"),
-  first_name: "",
-  last_name: "",
-  phone: "",
   email: "",
-  dateofBirth: "",
-  residence_country: "",
-  nationality: "",
   _id: "",
   isAdmin: false,
   isAccept: false,
@@ -20,93 +14,54 @@ const initialState = {
   registerError: "",
   loginStatus: "",
   loginError: "",
-  // otpStatus:"",
-  // otpError: "",
   userLoaded: false,
 };
 
-// export const otpGenerate = createAsyncThunk(
-//   "otp/otpGenerate",
-//   async (values, { rejectWithValue }) => {
-//     try {
-//       const tokens = await axios.post(`${url}/SendEmail`, {
-//         email: values.email,
-//       });
-//       return tokens.data;
-//     } catch (error) {
-//       console.log(error.response);
-//       return rejectWithValue(error.response.data);
-//     }
-//   }
-// );
-
 export const registerUser = createAsyncThunk(
-  "auth/registerUser",
-  async (values, { rejectWithValue }) => {
-    try {
-      // console.log("values =>",values)
-      const token = await axios.post(`${url}/register`, {
-        first_name: values.first_name,
-        last_name: values.last_name,
-        phone: values.phone,
-        email: values.email,
-        dateofBirth: values.dateofBirth,
-        residence_country: values.residence_country,
-        nationality: values.nationality,
-        password: values.password,
-      });
-
-      localStorage.setItem("token", token.data);
-
-      return token.data;
-    } catch (error) {
-      console.log(error.response.data);
-      toast.error(error.response?.data, {
-        position: "bottom-left",
-      });
-      return rejectWithValue(error.response.data);
+    "auth/registerUser",
+    async (values, { rejectWithValue }) => {
+      try {
+        const token = await axios.post(`${url}/register`, {
+          email: values.email,
+          password: values.password,
+          // Add placeholder values for other fields
+          first_name: "Placeholder",
+          last_name: "Placeholder",
+          phone: "0000000000",
+          dateofBirth: new Date().toISOString(),
+          residence_country: "Placeholder",
+          nationality: "Placeholder",
+        });
+        localStorage.setItem("token", token.data);
+        return token.data;
+      } catch (error) {
+        console.log(error.response.data);
+        toast.error(error.response?.data, {
+          position: "bottom-left",
+        });
+        return rejectWithValue(error.response.data);
+      }
     }
-  }
 );
 
 export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async (values, { rejectWithValue }) => {
-    try {
-      const token = await axios.post(`${url}/login`, {
-        email: values.email,
-        password: values.password,
-      });
-
-      localStorage.setItem("token", token.data);
-      return token.data;
-    } catch (error) {
-      console.log(error.response);
-      toast.error(error.response?.data, {
-        position: "bottom-left",
-      });
-      return rejectWithValue(error.response.data);
+    "auth/loginUser",
+    async (values, { rejectWithValue }) => {
+      try {
+        const token = await axios.post(`${url}/login`, {
+          email: values.email,
+          password: values.password,
+        });
+        localStorage.setItem("token", token.data);
+        return token.data;
+      } catch (error) {
+        console.log(error.response);
+        toast.error(error.response?.data, {
+          position: "bottom-left",
+        });
+        return rejectWithValue(error.response.data);
+      }
     }
-  }
-);
-
-export const getUser = createAsyncThunk(
-  "auth/getUser",
-  async (id, { rejectWithValue }) => {
-    try {
-      const token = await axios.get(`${url}/users/find/${id}`, setHeaders());
-
-      localStorage.setItem("token", token.data);
-
-      return token.data;
-    } catch (error) {
-      console.log(error.response);
-      toast.error(error.response?.data, {
-        position: "bottom-left",
-      });
-      return rejectWithValue(error.response.data);
-    }
-  }
 );
 
 const authSlice = createSlice({
@@ -115,19 +70,12 @@ const authSlice = createSlice({
   reducers: {
     loadUser(state, action) {
       const token = state.token;
-
       if (token) {
         const user = jwtDecode(token);
         return {
           ...state,
           token,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone: user.phone,
           email: user.email,
-          dateofBirth: user.dateofBirth,
-          residence_country: user.residence_country,
-          nationality: user.nationality,
           _id: user._id,
           isAdmin: user.isAdmin,
           isAccept: user.isAccept,
@@ -137,17 +85,10 @@ const authSlice = createSlice({
     },
     logoutUser(state, action) {
       localStorage.removeItem("token");
-
       return {
         ...state,
         token: "",
-        first_name: "",
-        last_name: "",
-        phone: "",
         email: "",
-        dateofBirth: "",
-        residence_country: "",
-        nationality: "",
         _id: "",
         isAdmin: false,
         isAccept: false,
@@ -168,13 +109,7 @@ const authSlice = createSlice({
         return {
           ...state,
           token: action.payload,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone: user.phone,
           email: user.email,
-          dateofBirth: user.dateofBirth,
-          residence_country: user.residence_country,
-          nationality: user.nationality,
           _id: user._id,
           isAdmin: user.isAdmin,
           isAccept: user.isAccept,
@@ -189,27 +124,6 @@ const authSlice = createSlice({
         registerError: action.payload,
       };
     });
-    // builder.addCase(otpGenerate.pending, (state, action) => {
-    //   return { ...state, otpStatus: "pending" };
-    // });
-    // builder.addCase(otpGenerate.fulfilled, (state, action) => {
-    //   if (action.payload) {
-    //     const user = jwtDecode(action.payload);
-    //     return {
-    //       ...state,
-    //       // token: action.payload,
-    //       email: user.email,
-    //       otpStatus: "success",
-    //     };
-    //   } else return state;
-    // });
-    // builder.addCase(otpGenerate.rejected, (state, action) => {
-    //   return {
-    //     ...state,
-    //     otpStatus: "rejected",
-    //     otpError: action.payload,
-    //   };
-    // });
     builder.addCase(loginUser.pending, (state, action) => {
       return { ...state, loginStatus: "pending" };
     });
@@ -219,13 +133,7 @@ const authSlice = createSlice({
         return {
           ...state,
           token: action.payload,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone: user.phone,
           email: user.email,
-          dateofBirth: user.dateofBirth,
-          residence_country: user.residence_country,
-          nationality: user.nationality,
           _id: user._id,
           isAdmin: user.isAdmin,
           isAccept: user.isAccept,
@@ -238,39 +146,6 @@ const authSlice = createSlice({
         ...state,
         loginStatus: "rejected",
         loginError: action.payload,
-      };
-    });
-    builder.addCase(getUser.pending, (state, action) => {
-      return {
-        ...state,
-        getUserStatus: "pending",
-      };
-    });
-    builder.addCase(getUser.fulfilled, (state, action) => {
-      if (action.payload) {
-        const user = jwtDecode(action.payload);
-        return {
-          ...state,
-          token: action.payload,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone: user.phone,
-          email: user.email,
-          dateofBirth: user.dateofBirth,
-          residence_country: user.residence_country,
-          nationality: user.nationality,
-          _id: user._id,
-          isAdmin: user.isAdmin,
-          isAccept: user.isAccept,
-          getUserStatus: "success",
-        };
-      } else return state;
-    });
-    builder.addCase(getUser.rejected, (state, action) => {
-      return {
-        ...state,
-        getUserStatus: "rejected",
-        getUserError: action.payload,
       };
     });
   },
