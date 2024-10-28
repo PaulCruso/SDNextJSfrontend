@@ -18,6 +18,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { getEnsName } from "wagmi/actions";
 import { config } from "../components/MarketPlace/config";
+
 const MarketPlace = () => {
   const account = useAccount();
   console.log("account =>>", account);
@@ -48,7 +49,7 @@ const MarketPlace = () => {
     }
   }, [isConnected, address, addresses, user._id]);
 
-  const updateWalletsInDB = async (walletAddresses, activeWallet, userID) => {
+  const updateWalletsInDB = async (walletAddresses, activeWallet, userID) => { 
     try {
       const response = await axios.patch(
         `${url}/users/wallet/update/${userID}`,
