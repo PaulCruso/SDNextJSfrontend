@@ -115,7 +115,46 @@ const MarketPlace = () => {
           <ListProperty />
         </div>
       ) : (
-        <LandPage />
+        <div>
+          <PageLayout desc={false} pageTitle="MarketPLace" />
+          {/* <Research /> */}
+          {/* <Filter /> */}
+          {/* <div className='text-center row' style={{ 
+                             marginLeft: "10px" , backgroundColor:"white"
+                            }}>
+                            <nav className="col cltext-center">
+                                <div className='timer'>
+                                    <div className='box'>
+                                        <p>{timeLeft.days}</p>
+                                        <span>Days</span>
+                                    </div>
+                                    <span className='columnns'>:</span>
+                                    <div className='box'>
+                                        <p>{timeLeft.hours}</p>
+                                        <span>Hours</span>
+                                    </div>
+                                    <span className='columnns'>:</span>
+                                    <div className='box'>
+                                        <p>{timeLeft.minutes}</p>
+                                        <span>Minutes</span>
+                                    </div>
+                                    <span className='columnns'>:</span>
+                                    <div className='box'>
+                                        <p>{timeLeft.seconds}</p>
+                                        <span>Seconds</span>
+                                    </div>
+                                </div>
+                            </nav>
+                            <p className='col titless'>
+                                COMING SOON
+                            </p>
+                            <div className='logo text-start ml-4 mb-2'>
+                                <img src={logoo} width="30px" height="30px" className="App-logo" alt="logo" />
+                                <span>SecondaryDAO</span>
+                            </div>
+                        </div> */}
+          <ListProperty />
+        </div>
       )}
       <Footer />
     </div>
